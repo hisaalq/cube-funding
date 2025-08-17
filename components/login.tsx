@@ -9,12 +9,12 @@ import {
 } from "react-native";
 
 const LoginScreen = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
     // Implement login logic here
-    console.log("Logging in with:", email, password);
+    console.log("Logging in with:", username, password);
   };
 
   return (
@@ -28,16 +28,16 @@ const LoginScreen = () => {
 
         <TextInput
           style={styles.input}
-          placeholder="Email"
-          keyboardType="email-address"
+          placeholder="Username"
           autoCapitalize="none"
-          value={email}
-          onChangeText={setEmail}
+          value={username}
+          onChangeText={setUsername}
         />
 
         <TextInput
           style={styles.input}
           placeholder="Password"
+          keyboardType="visible-password"
           secureTextEntry
           value={password}
           onChangeText={setPassword}
