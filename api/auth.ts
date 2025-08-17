@@ -15,7 +15,7 @@ const login = async (userInfo: UserInfo) => {
   return data;
 };
 
-const register = async (userInfo: UserInfo) => {
+const register = async (userInfo: FormData) => {
   const { data } = await instance.post(
     "/mini-project/api/auth/register",
     userInfo
