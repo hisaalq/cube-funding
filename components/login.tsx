@@ -16,7 +16,7 @@ const LoginScreen = () => {
   const { mutate } = useMutation({
     mutationKey: ["login"],
     mutationFn: login,
-    onSuccess: (data) => console.log("logged in successfully", data),
+    onSuccess: async (data) => console.log("logged in successfully", data),
     onError: (err) => {
       console.error("Login error:", err);
     },
