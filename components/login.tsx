@@ -1,3 +1,5 @@
+import { login } from "@/api/auth";
+import { useMutation } from "@tanstack/react-query";
 import React, { useState } from "react";
 import {
   Image,
@@ -9,13 +11,16 @@ import {
 } from "react-native";
 
 const LoginScreen = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [userInfo, setUserInfo] = useState({ username: "", password: "" });
 
-  const handleLogin = () => {
-    // Implement login logic here
-    console.log("Logging in with:", username, password);
-  };
+  const { mutate } = useMutation({
+    mutationKey: ["login"],
+    mutationFn: login,
+    onSuccess: (data) => console.log("logged in successfully", data),
+    onError: (err) => {
+      console.error("Login error:", err);
+    },
+  });
 
   return (
     <View style={styles.background}>
@@ -30,8 +35,8 @@ const LoginScreen = () => {
           style={styles.input}
           placeholder="Username"
           autoCapitalize="none"
-          value={username}
-          onChangeText={setUsername}
+          value={userInfo.username}
+          onChangeText={(text) => setUserInfo({ ...userInfo, username: text })}
         />
 
         <TextInput
@@ -39,15 +44,18 @@ const LoginScreen = () => {
           placeholder="Password"
           keyboardType="visible-password"
           secureTextEntry
-          value={password}
-          onChangeText={setPassword}
+          value={userInfo.password}
+          onChangeText={(text) => setUserInfo({ ...userInfo, password: text })}
         />
 
         <TouchableOpacity onPress={() => console.log("Forgot Password?")}>
           <Text style={styles.forgotPassword}>Forgot Password?</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+        <TouchableOpacity
+          style={styles.loginButton}
+          onPress={() => mutate(userInfo)}
+        >
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
 
