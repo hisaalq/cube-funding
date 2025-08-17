@@ -4,7 +4,7 @@ export default function RootLayout() {
   const queryClient = new QueryClient();
   return (
     <QueryClientProvider client={queryClient}>
-      <Stack />
+      <Stack></Stack>
     </QueryClientProvider>
   );
 }

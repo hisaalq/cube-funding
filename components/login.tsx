@@ -3,10 +3,14 @@ import { useMutation } from "@tanstack/react-query";
 import React, { useState } from "react";
 import {
   Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 
@@ -24,43 +28,55 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.background}>
-      <View style={styles.container}>
-        <Image
-          source={require("../assets/images/cube-funding-logo-sm.png")}
-          style={styles.logo}
-        />
-        <Text style={styles.title}>Welcome Back!</Text>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 50 : 0}
+        style={styles.container}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.container}>
+            <Image
+              source={require("../assets/images/cube-funding-logo-sm.png")}
+              style={styles.logo}
+            />
+            <Text style={styles.title}>Welcome Back!</Text>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Username"
-          autoCapitalize="none"
-          value={userInfo.username}
-          onChangeText={(text) => setUserInfo({ ...userInfo, username: text })}
-        />
+            <TextInput
+              style={styles.input}
+              placeholder="Username"
+              autoCapitalize="none"
+              value={userInfo.username}
+              onChangeText={(text) =>
+                setUserInfo({ ...userInfo, username: text })
+              }
+            />
 
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          keyboardType="visible-password"
-          secureTextEntry
-          value={userInfo.password}
-          onChangeText={(text) => setUserInfo({ ...userInfo, password: text })}
-        />
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              keyboardType="visible-password"
+              secureTextEntry
+              value={userInfo.password}
+              onChangeText={(text) =>
+                setUserInfo({ ...userInfo, password: text })
+              }
+            />
 
-        <TouchableOpacity onPress={() => console.log("Forgot Password?")}>
-          <Text style={styles.forgotPassword}>Forgot Password?</Text>
-        </TouchableOpacity>
+            <TouchableOpacity onPress={() => console.log("Forgot Password?")}>
+              <Text style={styles.forgotPassword}>Don't have an account?</Text>
+            </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.loginButton}
-          onPress={() => mutate(userInfo)}
-        >
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.loginButton}
+              onPress={() => mutate(userInfo)}
+            >
+              <Text style={styles.buttonText}>Login</Text>
+            </TouchableOpacity>
 
-        {/* Add social login buttons or other options here */}
-      </View>
+            {/* Add social login buttons or other options here */}
+          </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </View>
   );
 };
