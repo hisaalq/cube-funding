@@ -1,6 +1,7 @@
 import { register } from "@/api/auth";
 import { useMutation } from "@tanstack/react-query";
 import * as ImagePicker from "expo-image-picker";
+import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   Image,
@@ -14,7 +15,6 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-
 const RegisterScreen = () => {
   const [userInfo, setUserInfo] = useState({
     username: "",
@@ -67,7 +67,6 @@ const RegisterScreen = () => {
     <View style={styles.background}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.container}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.container}>
@@ -104,7 +103,19 @@ const RegisterScreen = () => {
                 setUserInfo({ ...userInfo, password: text })
               }
             />
-
+            <View
+              style={{
+                flexDirection: "row",
+                gap: 4,
+              }}
+            >
+              <Text>Already have an account?</Text>
+              <TouchableOpacity
+                onPress={() => router.push("/(auth)/loginPage")}
+              >
+                <Text style={styles.forgotPassword}>Log in</Text>
+              </TouchableOpacity>
+            </View>
             <TouchableOpacity
               style={[styles.loginButton, isPending && styles.disableButton]}
               onPress={handleRegister}
@@ -128,11 +139,16 @@ const styles = StyleSheet.create({
     backgroundColor: "beige",
   },
   container: {
-    width: "80%",
+    width: 300,
     backgroundColor: "rgba(255, 255, 255, 0.9)",
     padding: 20,
     borderRadius: 10,
     alignItems: "center",
+    shadowColor: "#000", // shadow color
+    shadowOffset: { width: 0, height: 4 }, // first part of box-shadow
+    shadowOpacity: 0.2, // alpha of first shadow
+    shadowRadius: 8, // blur radius
+    elevation: 6, // Android shadow
   },
   title: {
     fontSize: 28,
@@ -174,6 +190,10 @@ const styles = StyleSheet.create({
   image: {
     width: 100,
     height: 100,
+    marginBottom: 20,
+  },
+  forgotPassword: {
+    color: "#007bff",
     marginBottom: 20,
   },
 });

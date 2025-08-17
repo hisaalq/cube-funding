@@ -4,7 +4,27 @@ export default function RootLayout() {
   const queryClient = new QueryClient();
   return (
     <QueryClientProvider client={queryClient}>
-      <Stack></Stack>
+      <Stack>
+        <Stack.Screen
+          name="index"
+          options={{
+            headerShown: false,
+            title: "Welcome",
+          }}
+        />
+        <Stack.Screen
+          name="(auth)/registerPage"
+          options={{
+            title: "Register",
+          }}
+        />
+        <Stack.Screen
+          name="(auth)/loginPage"
+          options={{
+            title: "Log In",
+          }}
+        />
+      </Stack>
     </QueryClientProvider>
   );
 }

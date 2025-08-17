@@ -1,4 +1,4 @@
-import RegisterScreen from "@/components/Register";
+import MainPage from "@/components";
 export default function Index() {
-  return <RegisterScreen />;
+  return <MainPage />;
 }

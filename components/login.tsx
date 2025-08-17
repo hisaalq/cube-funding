@@ -1,5 +1,7 @@
 import { login } from "@/api/auth";
 import { useMutation } from "@tanstack/react-query";
+import { router } from "expo-router";
+
 import React, { useState } from "react";
 import {
   Image,
@@ -31,7 +33,6 @@ const LoginScreen = () => {
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "ios" ? 50 : 0}
-        style={styles.container}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.container}>
@@ -61,10 +62,19 @@ const LoginScreen = () => {
                 setUserInfo({ ...userInfo, password: text })
               }
             />
-
-            <TouchableOpacity onPress={() => console.log("Forgot Password?")}>
-              <Text style={styles.forgotPassword}>Don't have an account?</Text>
-            </TouchableOpacity>
+            <View
+              style={{
+                flexDirection: "row",
+                gap: 4,
+              }}
+            >
+              <Text>Don't have an account?</Text>
+              <TouchableOpacity
+                onPress={() => router.push("/(auth)/registerPage")}
+              >
+                <Text style={styles.forgotPassword}>Sign up</Text>
+              </TouchableOpacity>
+            </View>
 
             <TouchableOpacity
               style={styles.loginButton}
@@ -89,11 +99,16 @@ const styles = StyleSheet.create({
     backgroundColor: "beige",
   },
   container: {
-    width: "80%",
+    width: 300,
     backgroundColor: "rgba(255, 255, 255, 0.9)",
     padding: 20,
     borderRadius: 10,
     alignItems: "center",
+    shadowColor: "#000", // shadow color
+    shadowOffset: { width: 0, height: 4 }, // first part of box-shadow
+    shadowOpacity: 0.2, // alpha of first shadow
+    shadowRadius: 8, // blur radius
+    elevation: 6, // Android shadow
   },
   title: {
     fontSize: 28,
