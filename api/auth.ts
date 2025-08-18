@@ -12,6 +12,7 @@ const login = async (userInfo: UserInfo) => {
     "/mini-project/api/auth/login",
     userInfo
   );
+  console.log(data.token);
   await storeToken(data.token);
 
   return data;
@@ -26,7 +27,4 @@ const register = async (userInfo: UserInfo) => {
   return data;
 };
 
-
-
 export { login, register };
-

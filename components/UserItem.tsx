@@ -1,64 +1,36 @@
-// create a user profile page
+import React from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-import { getUserProfile } from "@/api/user";
-import AuthContext from "@/context/AuthContext";
-import { UserProfile } from "@/types/UserProfile";
-import { useQuery } from "@tanstack/react-query";
-import React, { useContext } from "react";
-import { ActivityIndicator, Image, StyleSheet, Text, View } from "react-native";
-
-export default function ClientProfile() {
-  const { getToken } = useContext(AuthContext);
-  const { data, isLoading, isError, error } = useQuery<UserProfile>({
-    queryKey: ["userProfile"],
-    queryFn: getUserProfile,
-  });
-
-  if (isLoading) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#0000ff" />
-        <Text>Loading profile...</Text>
-      </View>
-    );
-  }
-  if (isError) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>
-          Error: {(error as Error)?.message ?? "Something went wrong"}
-        </Text>
-      </View>
-    );
-  }
-  if (!data) {
-    return (
-      <View style={styles.container}>
-        <Text>No user profile found.</Text>
-      </View>
-    );
-  }
+interface AllUsers {
+  username: string;
+  balance: number;
+  //   image: string;
+  _id: string;
+}
+const UserItem = (UserInfo: AllUsers) => {
   return (
     <View style={styles.background}>
       <View style={styles.container}>
-        <Image
-          source={require("../assets/images/cube-funding-logo-sm.png")}
-          style={styles.logo}
-        />
-        <Image source={{ uri: data.image }} style={styles.image} />
-        <Text style={styles.username}>Username: {data.username}</Text>
-        <Text style={styles.balance}>Balance: {data.balance}</Text>
+        {/* <Image source={{ uri: UserInfo.image }} style={styles.image} /> */}
+        <Text style={styles.username}>{UserInfo.username}</Text>
+        <Text style={styles.balance}>Balance: {UserInfo.balance}</Text>
+        <TouchableOpacity style={styles.loginButton}>
+          <Text style={styles.buttonText}>Transfer</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
-}
+};
+
+export default UserItem;
 
 const styles = StyleSheet.create({
   background: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "beige",
+
+    padding: 15,
   },
   logo: {
     width: 100,

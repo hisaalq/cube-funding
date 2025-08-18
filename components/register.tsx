@@ -25,7 +25,10 @@ const RegisterScreen = () => {
   const { mutate, isPending } = useMutation({
     mutationKey: ["register"],
     mutationFn: register,
-    onSuccess: async (data) => console.log("registered successfully", data),
+    onSuccess: async (data) => {
+      console.log("registered successfully", data),
+        router.push("/(tabs)/current-user");
+    },
     onError: (err) => {
       console.error("Register error:", err);
     },

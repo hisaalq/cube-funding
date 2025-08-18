@@ -1,12 +1,8 @@
+import UsersList from "@/components/UsersList";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-
+import { StyleSheet } from "react-native";
 const Users = () => {
-  return (
-    <View>
-      <Text>users</Text>
-    </View>
-  );
+  return <UsersList />;
 };
 
 export default Users;
