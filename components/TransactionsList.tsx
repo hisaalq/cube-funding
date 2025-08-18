@@ -7,6 +7,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -27,7 +28,7 @@ const TransactionsList = () => {
   const deposits = mockTransactions.filter((item) => item.type === "deposit");
   const withdraws = mockTransactions.filter((item) => item.type === "withdraw");
   const transfers = mockTransactions.filter((item) => item.type === "transfer");
-  if (isLoading) return <ActivityIndicator />;
+  if (isLoading) return <ActivityIndicator style={{ marginTop: 30 }} />;
   const transactions = list.map((item: MockTransactions) => (
     <View key={item.id}>
       <TransactionsItem
@@ -45,6 +46,18 @@ const TransactionsList = () => {
         backgroundColor: "beige",
       }}
     >
+      <TextInput
+        style={styles.searchBar}
+        placeholder="Search amount"
+        onChangeText={(text) => {
+          setList(
+            mockTransactions.filter((item) => {
+              return item.amount.toString().includes(text);
+            })
+          );
+        }}
+      />
+
       <View style={styles.filterContainer}>
         <TouchableOpacity
           style={styles.button}
@@ -92,6 +105,22 @@ const styles = StyleSheet.create({
     backgroundColor: "beige",
     paddingTop: 10,
   },
+  searchBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    margin: 12,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 2,
+  },
   filterContainer: {
     flexDirection: "row",
     justifyContent: "center",
@@ -99,7 +128,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   button: {
-    marginTop: 20,
+    marginTop: 10,
     width: 80,
     height: 40,
     backgroundColor: "#007bff",

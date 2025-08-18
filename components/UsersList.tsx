@@ -14,7 +14,7 @@ const UsersList = () => {
     queryKey: ["getAllUsers"],
     queryFn: getAllUsers,
   });
-  if (isLoading) return <ActivityIndicator />;
+  if (isLoading) return <ActivityIndicator style={{ marginTop: 30 }} />;
   return (
     <ScrollView style={{ backgroundColor: "beige" }}>
       {isSuccess &&
