@@ -1,31 +1,53 @@
 // create a user profile page
 
-import { getUserProfile } from "@/api";
+import { getUserProfile } from "@/api/user";
+import AuthContext from "@/context/AuthContext";
 import { UserProfile } from "@/types/UserProfile";
-import { Background } from "@react-navigation/elements";
 import { useQuery } from "@tanstack/react-query";
-import React from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import React, { useContext } from "react";
+import { ActivityIndicator, Image, StyleSheet, Text, View } from "react-native";
 
-export default function ClientProfile(userId: string) {
-  const { data, isLoading, isError, error, refetch } = useQuery<UserProfile>({
+
+
+export default function ClientProfile() {
+  const { getToken } = useContext(AuthContext);
+  const { data, isLoading, isError, error, } = useQuery<UserProfile>({
     queryKey: ["userProfile"],
-    queryFn: () => getUserProfile(userId),
-    enabled: !!userId,
+    queryFn:  getUserProfile,
   });
 
+  if (isLoading) {return (
+  <View style={styles.container}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text>Loading profile...</Text>
+      </View>);}
+  if (isError) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.errorText}>
+            Error: {(error as Error)?.message ?? "Something went wrong"}
+        </Text>
+      </View>
+    );
+  }
+  if (!data) {
+    return (
+      <View style={styles.container}>
+        <Text>No user profile found.</Text>
+      </View>
+    );
+  }
   return (
-    <Background style={styles.background}>
+    <View style={styles.background}>
       <View style={styles.container}>
         <Text style={styles.title}>User Profile</Text>
-
-        <Image source={data?.image} style={styles.image} />
-        <Text>Username: {data?.username}</Text>
-        <Text>Balance: {data?.balance}</Text>
+        <Image source={{ uri: data.image }} style={styles.image} />
+        <Text>Username: {data.username}</Text>
+        <Text>Balance: {data.balance}</Text>
 
         {/* Add social login buttons or other options here */}
       </View>
-    </Background>
+    </View>
   );
 }
 
@@ -80,6 +102,11 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     resizeMode: "cover",
+    marginBottom: 20,
+  },
+  errorText: {
+    color: "red",
+    fontSize: 16,
     marginBottom: 20,
   },
 });

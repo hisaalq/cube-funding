@@ -1,4 +1,4 @@
-import LoginScreen from "@/components/Login";
+import LoginScreen from "@/components/login";
 import React from "react";
 import { StyleSheet } from "react-native";
 const loginPage = () => {
@@ -7,4 +7,4 @@ const loginPage = () => {
 
 export default loginPage;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create ({});

@@ -48,19 +48,7 @@ const RegisterScreen = () => {
   };
 
   const handleRegister = async () => {
-    const formData = new FormData();
-    formData.append("username", userInfo.username);
-    formData.append("password", userInfo.password);
-
-    if (userInfo.image) {
-      formData.append("image", {
-        uri: userInfo.image,
-        name: "profile.jpg",
-        type: "image/jpeg",
-      } as any);
-    }
-
-    mutate(formData);
+    mutate(userInfo);
   };
 
   return (

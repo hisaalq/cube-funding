@@ -1,8 +1,10 @@
 import instance from ".";
 import { storeToken } from "./storage";
+
 interface UserInfo {
   username: string;
   password: string;
+  image?: string;
 }
 
 const login = async (userInfo: UserInfo) => {
@@ -15,7 +17,7 @@ const login = async (userInfo: UserInfo) => {
   return data;
 };
 
-const register = async (userInfo: FormData) => {
+const register = async (userInfo: UserInfo) => {
   const { data } = await instance.post(
     "/mini-project/api/auth/register",
     userInfo
@@ -24,10 +26,7 @@ const register = async (userInfo: FormData) => {
   return data;
 };
 
-const getUserProfile = async (userId: string) => {
-  const { data } = await instance.get(`/mini-project/api/auth/user/${userId}`);
-  return data;
-};
 
-export { getUserProfile, login, register };
+
+export { login, register };
 

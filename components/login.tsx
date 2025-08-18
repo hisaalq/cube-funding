@@ -22,7 +22,10 @@ const LoginScreen = () => {
   const { mutate } = useMutation({
     mutationKey: ["login"],
     mutationFn: login,
-    onSuccess: async (data) => console.log("logged in successfully", data),
+    onSuccess: async (data) => {
+      console.log("logged in successfully", data);
+      router.push("/(tabs)/current-user");
+    },
     onError: (err) => {
       console.error("Login error:", err);
     },
