@@ -24,4 +24,10 @@ const register = async (userInfo: FormData) => {
   return data;
 };
 
-export { login, register };
+const getUserProfile = async (userId: string) => {
+  const { data } = await instance.get(`/mini-project/api/auth/user/${userId}`);
+  return data;
+};
+
+export { getUserProfile, login, register };
+
