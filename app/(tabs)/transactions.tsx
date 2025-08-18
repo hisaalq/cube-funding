@@ -1,12 +1,8 @@
+import TransactionsList from "@/components/TransactionsList";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-
+import { StyleSheet } from "react-native";
 const Transactions = () => {
-  return (
-    <View>
-      <Text>transactions</Text>
-    </View>
-  );
+  return <TransactionsList />;
 };
 
 export default Transactions;
