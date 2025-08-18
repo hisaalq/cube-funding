@@ -77,7 +77,10 @@ const RegisterScreen = () => {
             <Text style={styles.title}>Register</Text>
 
             <TouchableOpacity onPress={pickImage}>
-              <Text>Pick Image</Text>
+              <Image
+                style={styles.addImage}
+                source={require("../assets/images/add-image.png")}
+              />
             </TouchableOpacity>
             {userInfo.image ? (
               <Image source={{ uri: userInfo.image }} style={styles.image} />
@@ -190,6 +193,11 @@ const styles = StyleSheet.create({
   image: {
     width: 100,
     height: 100,
+    marginBottom: 20,
+  },
+  addImage: {
+    width: 80,
+    height: 90,
     marginBottom: 20,
   },
   forgotPassword: {
