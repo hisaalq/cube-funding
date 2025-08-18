@@ -29,7 +29,7 @@ export default function RootLayout() {
           }}
         />
         <Tabs.Screen
-          name="(tabs)/userprofile"
+          name="(tabs)/current-user"
           options={{
             title: "Profile",
             tabBarIcon: ({ color }) => (

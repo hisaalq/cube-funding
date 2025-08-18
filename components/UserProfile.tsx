@@ -7,25 +7,26 @@ import { useQuery } from "@tanstack/react-query";
 import React, { useContext } from "react";
 import { ActivityIndicator, Image, StyleSheet, Text, View } from "react-native";
 
-
-
 export default function ClientProfile() {
   const { getToken } = useContext(AuthContext);
-  const { data, isLoading, isError, error, } = useQuery<UserProfile>({
+  const { data, isLoading, isError, error } = useQuery<UserProfile>({
     queryKey: ["userProfile"],
-    queryFn:  getUserProfile,
+    queryFn: getUserProfile,
   });
 
-  if (isLoading) {return (
-  <View style={styles.container}>
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
         <ActivityIndicator size="large" color="#0000ff" />
         <Text>Loading profile...</Text>
-      </View>);}
+      </View>
+    );
+  }
   if (isError) {
     return (
       <View style={styles.container}>
         <Text style={styles.errorText}>
-            Error: {(error as Error)?.message ?? "Something went wrong"}
+          Error: {(error as Error)?.message ?? "Something went wrong"}
         </Text>
       </View>
     );
@@ -40,10 +41,13 @@ export default function ClientProfile() {
   return (
     <View style={styles.background}>
       <View style={styles.container}>
-        <Text style={styles.title}>User Profile</Text>
+        <Image
+          source={require("../assets/images/cube-funding-logo-sm.png")}
+          style={styles.logo}
+        />
         <Image source={{ uri: data.image }} style={styles.image} />
-        <Text>Username: {data.username}</Text>
-        <Text>Balance: {data.balance}</Text>
+        <Text style={styles.username}>Username: {data.username}</Text>
+        <Text style={styles.balance}>Balance: {data.balance}</Text>
 
         {/* Add social login buttons or other options here */}
       </View>
@@ -56,6 +60,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "beige",
+  },
+  logo: {
+    width: 100,
+    height: 50,
+    marginBottom: 20,
   },
   container: {
     width: "80%",
@@ -63,7 +73,28 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     alignItems: "center",
+    shadowColor: "#000", // shadow color
+    shadowOffset: { width: 0, height: 4 }, // first part of box-shadow
+    shadowOpacity: 0.2, // alpha of first shadow
+    shadowRadius: 8, // blur radius
+    elevation: 6, // Android shadow
   },
+  username: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 10,
+    textAlign: "center",
+  },
+
+  balance: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#007bff", // nice blue
+    marginBottom: 20,
+    textAlign: "center",
+  },
+
   title: {
     fontSize: 28,
     fontWeight: "bold",
