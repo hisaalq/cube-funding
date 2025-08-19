@@ -1,8 +1,9 @@
 import { login } from "@/api/auth";
+import AuthContext from "@/context/AuthContext";
 import { useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
 
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Image,
   Keyboard,
@@ -18,13 +19,13 @@ import {
 
 const LoginScreen = () => {
   const [userInfo, setUserInfo] = useState({ username: "", password: "" });
-
+  const { setIsAuthenticated } = useContext(AuthContext);
   const { mutate } = useMutation({
     mutationKey: ["login"],
     mutationFn: login,
     onSuccess: async (data) => {
-      console.log("logged in successfully", data);
-      router.push("/(tabs)/current-user");
+      setIsAuthenticated(true), console.log("logged in successfully", data);
+      router.push("/(protected)/(tabs)/current-user");
     },
     onError: (err) => {
       console.error("Login error:", err);

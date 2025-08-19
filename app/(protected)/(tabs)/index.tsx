@@ -2,7 +2,6 @@ import { depositMoney, withdrawMoney } from "@/api/transactions";
 import { getProfile } from "@/api/user";
 import { UserProfile } from "@/types/UserProfile";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
@@ -18,7 +17,9 @@ const Home = () => {
     queryKey: ["userInfo"],
     queryFn: getProfile,
   });
-  const [userBalance, setUserBalance] = useState<number>(userInfo?.balance || 0);
+  const [userBalance, setUserBalance] = useState<number>(
+    userInfo?.balance || 0
+  );
 
   useEffect(() => {
     if (userInfo?.balance) {
@@ -126,13 +127,13 @@ const Home = () => {
         {/* view transactions button */}
         <TouchableOpacity
           style={styles.viewTransactionsButton}
-          onPress={() => router.push("/(tabs)/transactions")}
+          // onPress={() => router.push("/(tabs)/transactions")}
         >
           <Text style={styles.buttonText}>View Transactions</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.transferButton}
-          onPress={() => router.push("/(tabs)/users")}
+          // onPress={() => router.push("/(tabs)/users")}
         >
           <Text style={styles.buttonText}>Transfer</Text>
         </TouchableOpacity>

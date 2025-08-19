@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
   Button,
+  Image,
   StyleSheet,
   Text,
   TextInput,
@@ -10,7 +11,7 @@ import {
 interface AllUsers {
   username: string;
   balance: number;
-  //   image: string;
+  image: string;
   _id: string;
 }
 const UserItem = (UserInfo: AllUsers) => {
@@ -20,7 +21,10 @@ const UserItem = (UserInfo: AllUsers) => {
   return (
     <View style={styles.background}>
       <View style={styles.container}>
-        {/* <Image source={{ uri: UserInfo.image }} style={styles.image} /> */}
+        <Image
+          source={require("@/assets/images/default.png")}
+          style={styles.image}
+        />
         <Text style={styles.username}>{UserInfo.username}</Text>
         <Text style={styles.balance}>Balance: {UserInfo.balance}</Text>
 

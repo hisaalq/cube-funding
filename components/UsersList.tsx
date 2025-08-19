@@ -23,7 +23,7 @@ const UsersList = () => {
             <UserItem
               username={item.username}
               balance={item.balance}
-              // image={item.image}
+              image={item.image}
               _id={item._id}
             />
           </View>

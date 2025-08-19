@@ -1,17 +1,13 @@
 import { createContext } from "react";
 
-interface AuthContextType {
+interface AuthState {
   isAuthenticated: boolean;
   setIsAuthenticated: (isAuthenticated: boolean) => void;
-  getToken: () => Promise<any>;
-  setToken: (token: string) => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType>({
+const AuthContext = createContext<AuthState>({
   isAuthenticated: false,
   setIsAuthenticated: () => {},
-  getToken: async () => "",
-  setToken: async () => {},
 });
 
 export default AuthContext;

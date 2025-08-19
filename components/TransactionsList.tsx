@@ -14,10 +14,10 @@ import {
 } from "react-native";
 //import TransactionsItem from "./TransactionsItem";
 //interface transactions {
-  //id: number;
-  //amount: number;
-  //date: string;
-  //type: string;
+//id: number;
+//amount: number;
+//date: string;
+//type: string;
 //}
 const TransactionsList = () => {
   const { data, isLoading, isSuccess } = useQuery<UserTransaction[]>({
@@ -35,28 +35,29 @@ const TransactionsList = () => {
     if (type === "all") {
       setList(data || []);
     } else {
-      setList(data?.filter((item) => item.amount.toString().includes(type)) || []);
+      setList(
+        data?.filter((item) => item.amount.toString().includes(type)) || []
+      );
     }
   };
 
   if (isLoading) return <ActivityIndicator style={{ marginTop: 30 }} />;
-  
 
-  //const [list, setList] = useState(getAllTransactions);
-  //const deposits = mockTransactions.filter((item) => item.type === "deposit");
-  //const withdraws = mockTransactions.filter((item) => item.type === "withdraw");
-  //const transfers = mockTransactions.filter((item) => item.type === "transfer");
-  //if (isLoading) return <ActivityIndicator style={{ marginTop: 30 }} />;
-  //const transactions = list.map((item: MockTransactions) => (
-   // <View key={item.id}>
-     // <TransactionsItem
-        //amount={item.amount}
-        //date={item.date}
-        //type={item.type}
-        //id={item.id}
-      ///>
-    //</View>
-  //));
+  // const [list, setList] = useState(getAllTransactions);
+  // const deposits = mockTransactions.filter((item) => item.type === "deposit");
+  // const withdraws = mockTransactions.filter((item) => item.type === "withdraw");
+  // const transfers = mockTransactions.filter((item) => item.type === "transfer");
+  // if (isLoading) return <ActivityIndicator style={{ marginTop: 30 }} />;
+  // const transactions = list.map((item: MockTransactions) => (
+  //  <View key={item.id}>
+  //    <TransactionsItem
+  //       amount={item.amount}
+  //       date={item.date}
+  //       type={item.type}
+  //       id={item.id}
+  //     />
+  //   </View>
+  // ));
   if (isSuccess) return <Text>No transactions found</Text>;
   return (
     <View
@@ -74,7 +75,9 @@ const TransactionsList = () => {
           );
         }}
       />
-      <TouchableOpacity onPress={() => handleSearch(search)}><Text>Search</Text></TouchableOpacity>
+      <TouchableOpacity onPress={() => handleSearch(search)}>
+        <Text>Search</Text>
+      </TouchableOpacity>
       <TouchableOpacity onPress={() => handleFilter("all")}>
         <Text style={styles.buttonText}>All</Text>
       </TouchableOpacity>
@@ -100,7 +103,11 @@ const TransactionsList = () => {
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
-            setList(data?.filter((item) => item.amount.toString().includes("deposit")) || []);
+            setList(
+              data?.filter((item) =>
+                item.amount.toString().includes("deposit")
+              ) || []
+            );
           }}
         >
           <Text style={styles.buttonText}>Deposit</Text>
@@ -108,7 +115,11 @@ const TransactionsList = () => {
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
-            setList(data?.filter((item) => item.amount.toString().includes("withdraw")) || []);
+            setList(
+              data?.filter((item) =>
+                item.amount.toString().includes("withdraw")
+              ) || []
+            );
           }}
         >
           <Text style={styles.buttonText}>Withdraw</Text>
@@ -116,17 +127,23 @@ const TransactionsList = () => {
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
-            setList(data?.filter((item) => item.amount.toString().includes("transfer")) || []);
+            setList(
+              data?.filter((item) =>
+                item.amount.toString().includes("transfer")
+              ) || []
+            );
           }}
         >
           <Text style={styles.buttonText}>Transfer</Text>
         </TouchableOpacity>
       </View>
-      <ScrollView>{list.map((item) => (
-        <View key={item.amount}>
-          <Text>{item.amount}</Text>
-        </View>
-      ))}</ScrollView>
+      <ScrollView>
+        {list.map((item) => (
+          <View key={item.amount}>
+            <Text>{item.amount}</Text>
+          </View>
+        ))}
+      </ScrollView>
     </View>
   );
 };
