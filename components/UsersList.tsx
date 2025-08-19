@@ -1,4 +1,4 @@
-import { getAllUsers } from "@/api/users";
+import { getAllUsers } from "@/api/user";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";

@@ -1,5 +1,6 @@
 import { getAllTransactions } from "@/api/transactions";
-import mockTransactions from "@/data/transactions";
+//import mockTransactions from "@/data/transactions";
+import { UserTransaction } from "@/types/UserTransaction";
 import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 import {
@@ -11,34 +12,52 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import TransactionsItem from "./TransactionsItem";
-interface MockTransactions {
-  id: number;
-  amount: number;
-  date: string;
-  type: string;
-}
+//import TransactionsItem from "./TransactionsItem";
+//interface transactions {
+  //id: number;
+  //amount: number;
+  //date: string;
+  //type: string;
+//}
 const TransactionsList = () => {
-  const { data, isLoading, isSuccess } = useQuery({
+  const { data, isLoading, isSuccess } = useQuery<UserTransaction[]>({
     queryKey: ["getAllTransactions"],
-    queryFn: getAllTransactions,
+    queryFn: () => getAllTransactions().then((res) => res.data),
   });
+  const [list, setList] = useState<UserTransaction[]>(data || []);
+  const [search, setSearch] = useState("");
 
-  const [list, setList] = useState(mockTransactions);
-  const deposits = mockTransactions.filter((item) => item.type === "deposit");
-  const withdraws = mockTransactions.filter((item) => item.type === "withdraw");
-  const transfers = mockTransactions.filter((item) => item.type === "transfer");
+  const handleSearch = (text: string) => {
+    setSearch(text);
+  };
+
+  const handleFilter = (type: string) => {
+    if (type === "all") {
+      setList(data || []);
+    } else {
+      setList(data?.filter((item) => item.amount.toString().includes(type)) || []);
+    }
+  };
+
   if (isLoading) return <ActivityIndicator style={{ marginTop: 30 }} />;
-  const transactions = list.map((item: MockTransactions) => (
-    <View key={item.id}>
-      <TransactionsItem
-        amount={item.amount}
-        date={item.date}
-        type={item.type}
-        id={item.id}
-      />
-    </View>
-  ));
+  
+
+  //const [list, setList] = useState(getAllTransactions);
+  //const deposits = mockTransactions.filter((item) => item.type === "deposit");
+  //const withdraws = mockTransactions.filter((item) => item.type === "withdraw");
+  //const transfers = mockTransactions.filter((item) => item.type === "transfer");
+  //if (isLoading) return <ActivityIndicator style={{ marginTop: 30 }} />;
+  //const transactions = list.map((item: MockTransactions) => (
+   // <View key={item.id}>
+     // <TransactionsItem
+        //amount={item.amount}
+        //date={item.date}
+        //type={item.type}
+        //id={item.id}
+      ///>
+    //</View>
+  //));
+  if (isSuccess) return <Text>No transactions found</Text>;
   return (
     <View
       style={{
@@ -51,18 +70,29 @@ const TransactionsList = () => {
         placeholder="Search amount"
         onChangeText={(text) => {
           setList(
-            mockTransactions.filter((item) => {
-              return item.amount.toString().includes(text);
-            })
+            data?.filter((item) => item.amount.toString().includes(text)) || []
           );
         }}
       />
+      <TouchableOpacity onPress={() => handleSearch(search)}><Text>Search</Text></TouchableOpacity>
+      <TouchableOpacity onPress={() => handleFilter("all")}>
+        <Text style={styles.buttonText}>All</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => handleFilter("deposit")}>
+        <Text style={styles.buttonText}>Deposit</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => handleFilter("withdraw")}>
+        <Text style={styles.buttonText}>Withdraw</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => handleFilter("transfer")}>
+        <Text style={styles.buttonText}>Transfer</Text>
+      </TouchableOpacity>
 
       <View style={styles.filterContainer}>
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
-            setList(mockTransactions);
+            setList(data || []);
           }}
         >
           <Text style={styles.buttonText}>All</Text>
@@ -70,7 +100,7 @@ const TransactionsList = () => {
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
-            setList(deposits);
+            setList(data?.filter((item) => item.amount.toString().includes("deposit")) || []);
           }}
         >
           <Text style={styles.buttonText}>Deposit</Text>
@@ -78,7 +108,7 @@ const TransactionsList = () => {
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
-            setList(withdraws);
+            setList(data?.filter((item) => item.amount.toString().includes("withdraw")) || []);
           }}
         >
           <Text style={styles.buttonText}>Withdraw</Text>
@@ -86,17 +116,21 @@ const TransactionsList = () => {
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
-            setList(transfers);
+            setList(data?.filter((item) => item.amount.toString().includes("transfer")) || []);
           }}
         >
           <Text style={styles.buttonText}>Transfer</Text>
         </TouchableOpacity>
       </View>
-      <ScrollView>{transactions}</ScrollView>
+      <ScrollView>{list.map((item) => (
+        <View key={item.amount}>
+          <Text>{item.amount}</Text>
+        </View>
+      ))}</ScrollView>
     </View>
   );
 };
-25;
+//25;
 export default TransactionsList;
 
 const styles = StyleSheet.create({

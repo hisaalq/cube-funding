@@ -1,6 +1,6 @@
 // create a user profile page
 
-import { getUserProfile } from "@/api/users";
+import { getProfile } from "@/api/user";
 import AuthContext from "@/context/AuthContext";
 import { UserProfile } from "@/types/UserProfile";
 import { useQuery } from "@tanstack/react-query";
@@ -11,7 +11,7 @@ export default function ClientProfile() {
   const { getToken } = useContext(AuthContext);
   const { data, isLoading, isError, error } = useQuery<UserProfile>({
     queryKey: ["userProfile"],
-    queryFn: getUserProfile,
+    queryFn: getProfile,
   });
 
   if (isLoading) {

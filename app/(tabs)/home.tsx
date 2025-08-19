@@ -1,5 +1,6 @@
-import { getUserProfile, updateBalance } from "@/api/users";
-// import { addTransaction } from "@/components/TransactionsItem";
+import { depositMoney, withdrawMoney } from "@/api/transactions";
+import { getProfile } from "@/api/user";
+import { UserProfile } from "@/types/UserProfile";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -13,11 +14,11 @@ import {
 
 const Home = () => {
   const queryClient = useQueryClient();
-  const { data: userInfo } = useQuery({
+  const { data: userInfo } = useQuery<UserProfile>({
     queryKey: ["userInfo"],
-    queryFn: getUserProfile,
+    queryFn: getProfile,
   });
-  const [userBalance, setUserBalance] = useState<number>(userInfo?.balance);
+  const [userBalance, setUserBalance] = useState<number>(userInfo?.balance || 0);
 
   useEffect(() => {
     if (userInfo?.balance) {
@@ -27,42 +28,43 @@ const Home = () => {
 
   const [isDepositModalVisible, setIsDepositModalVisible] = useState(false);
   const [isWithdrawModalVisible, setIsWithdrawModalVisible] = useState(false);
-  const [depositAmount, setDepositAmount] = useState("");
-  const [withdrawAmount, setWithdrawAmount] = useState("");
+  const [depositAmount, setDepositAmount] = useState<number>(0);
+  const [withdrawAmount, setWithdrawAmount] = useState<number>(0);
 
   const balanceMutation = useMutation({
-    mutationFn: (amount: number) => updateBalance(amount),
-    onSuccess: (data) => {
-      queryClient.setQueryData(["userInfo"], data);
+    mutationFn: depositMoney,
+    onSuccess: (amount) => {
+      queryClient.setQueryData(["userInfo"], amount);
     },
   });
+
   const transactionMutation = useMutation({
     mutationFn: (transaction: {
       type: "deposit" | "withdraw";
       amount: number;
-    }) => addTransaction(transaction),
+    }) => depositMoney(transaction.amount) || withdrawMoney(transaction.amount),
     onSuccess: () => {
-      queryClient.invalidateQueries(["transactions"]);
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
   });
 
   const handleConfirmDeposit = () => {
-    const amount = parseFloat(depositAmount);
+    const amount = parseFloat(depositAmount.toString());
     if (!isNaN(amount) && amount > 0) {
       balanceMutation.mutate(amount); // positive for deposit
       transactionMutation.mutate({ type: "deposit", amount });
     }
-    setDepositAmount("");
+    setDepositAmount(0);
     setIsDepositModalVisible(false);
   };
 
   const handleConfirmWithdraw = () => {
-    const amount = parseFloat(withdrawAmount);
+    const amount = parseFloat(withdrawAmount.toString());
     if (!isNaN(amount) && amount > 0) {
       balanceMutation.mutate(-amount); // negative for withdraw
       transactionMutation.mutate({ type: "withdraw", amount });
     }
-    setWithdrawAmount("");
+    setWithdrawAmount(0);
     setIsWithdrawModalVisible(false);
   };
 
@@ -86,7 +88,8 @@ const Home = () => {
               style={styles.input}
               placeholder="Enter amount to deposit"
               keyboardType="numeric"
-              value={depositAmount}
+              value={depositAmount.toString()}
+              onChangeText={(text) => setDepositAmount(Number(text))}
             />
             <TouchableOpacity
               style={styles.depositButton}
@@ -109,10 +112,8 @@ const Home = () => {
               style={styles.input}
               placeholder="Enter amount to withdraw"
               keyboardType="numeric"
-              // value={withdrawAmount}
-              onChangeText={(number) => {
-                setWithdrawAmount(number);
-              }}
+              value={withdrawAmount.toString()}
+              onChangeText={(text) => setWithdrawAmount(Number(text))}
             />
             <TouchableOpacity
               style={styles.withdrawButton}
