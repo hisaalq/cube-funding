@@ -96,7 +96,7 @@ const TransactionsList = () => {
     </View>
   );
 };
-
+25;
 export default TransactionsList;
 
 const styles = StyleSheet.create({

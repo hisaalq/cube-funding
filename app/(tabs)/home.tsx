@@ -1,18 +1,23 @@
 import { getUserProfile, updateBalance } from "@/api/users";
-import { addTransaction } from "@/components/TransactionsItem";
+// import { addTransaction } from "@/components/TransactionsItem";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 const Home = () => {
   const queryClient = useQueryClient();
   const { data: userInfo } = useQuery({
     queryKey: ["userInfo"],
     queryFn: getUserProfile,
-
   });
-  const [userBalance, setUserBalance] = useState(userInfo?.balance);
+  const [userBalance, setUserBalance] = useState<number>(userInfo?.balance);
 
   useEffect(() => {
     if (userInfo?.balance) {
@@ -32,100 +37,108 @@ const Home = () => {
     },
   });
   const transactionMutation = useMutation({
-    mutationFn: (transaction: { type: "deposit" | "withdraw"; amount: number }) => 
-      addTransaction(transaction),
+    mutationFn: (transaction: {
+      type: "deposit" | "withdraw";
+      amount: number;
+    }) => addTransaction(transaction),
     onSuccess: () => {
-      queryClient.invalidateQueries(["transactions"]);;
+      queryClient.invalidateQueries(["transactions"]);
     },
   });
 
-const handleConfirmDeposit = () => {
-  const amount = parseFloat(depositAmount);
-  if (!isNaN(amount) && amount > 0) {
-    balanceMutation.mutate(amount); // positive for deposit
-    transactionMutation.mutate({ type: "deposit", amount });
-  }
-  setDepositAmount("");
-  setIsDepositModalVisible(false);
-};
+  const handleConfirmDeposit = () => {
+    const amount = parseFloat(depositAmount);
+    if (!isNaN(amount) && amount > 0) {
+      balanceMutation.mutate(amount); // positive for deposit
+      transactionMutation.mutate({ type: "deposit", amount });
+    }
+    setDepositAmount("");
+    setIsDepositModalVisible(false);
+  };
 
-const handleConfirmWithdraw = () => {
-  const amount = parseFloat(withdrawAmount);
-  if (!isNaN(amount) && amount > 0) {
-    balanceMutation.mutate(-amount); // negative for withdraw
-    transactionMutation.mutate({ type: "withdraw", amount });
-  }
-  setWithdrawAmount("");
-  setIsWithdrawModalVisible(false);
-};
+  const handleConfirmWithdraw = () => {
+    const amount = parseFloat(withdrawAmount);
+    if (!isNaN(amount) && amount > 0) {
+      balanceMutation.mutate(-amount); // negative for withdraw
+      transactionMutation.mutate({ type: "withdraw", amount });
+    }
+    setWithdrawAmount("");
+    setIsWithdrawModalVisible(false);
+  };
 
   return (
     <View style={styles.background}>
       <View style={styles.container}>
         <Text style={styles.title}>Welcome Back, {userInfo?.username}!</Text>
-        <Text style={styles.subtitle}>Your current balance is {userInfo?.balance}</Text>
+        <Text style={styles.subtitle}>
+          Your current balance is {userBalance}
+        </Text>
         {/* deposit button */}
-        <TouchableOpacity 
-        style={styles.depositButton} 
-        onPress={() => setIsDepositModalVisible(true)}>
+        <TouchableOpacity
+          style={styles.depositButton}
+          onPress={() => setIsDepositModalVisible(true)}
+        >
           <Text style={styles.buttonText}>Deposit</Text>
-          </TouchableOpacity>
-          {isDepositModalVisible && (
-            <View style={styles.modalContainer}>
-              <TextInput 
-              style={styles.input} 
+        </TouchableOpacity>
+        {isDepositModalVisible && (
+          <View style={styles.modalContainer}>
+            <TextInput
+              style={styles.input}
               placeholder="Enter amount to deposit"
               keyboardType="numeric"
               value={depositAmount}
-              onChangeText={setDepositAmount}
-              />
-              <TouchableOpacity 
-              style={styles.depositButton} 
-              onPress={handleConfirmDeposit}>
-                <Text style={styles.buttonText}>Confirm</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-          {/* withdraw Button */}
-        <TouchableOpacity 
-        style={styles.withdrawButton} 
-        onPress={() => setIsWithdrawModalVisible(true)}>
+            />
+            <TouchableOpacity
+              style={styles.depositButton}
+              onPress={handleConfirmDeposit}
+            >
+              <Text style={styles.buttonText}>Confirm</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        {/* withdraw Button */}
+        <TouchableOpacity
+          style={styles.withdrawButton}
+          onPress={() => setIsWithdrawModalVisible(true)}
+        >
           <Text style={styles.buttonText}>Withdraw</Text>
         </TouchableOpacity>
         {isWithdrawModalVisible && (
           <View style={styles.modalContainer}>
-            <TextInput 
-            style={styles.input} 
-            placeholder="Enter amount to withdraw"
-            keyboardType="numeric"
-            value={withdrawAmount}
-            onChangeText={setWithdrawAmount}
+            <TextInput
+              style={styles.input}
+              placeholder="Enter amount to withdraw"
+              keyboardType="numeric"
+              // value={withdrawAmount}
+              onChangeText={(number) => {
+                setWithdrawAmount(number);
+              }}
             />
-            <TouchableOpacity 
-            style={styles.withdrawButton} 
-            onPress={handleConfirmWithdraw}>
+            <TouchableOpacity
+              style={styles.withdrawButton}
+              onPress={handleConfirmWithdraw}
+            >
               <Text style={styles.buttonText}>Confirm</Text>
             </TouchableOpacity>
           </View>
-        )}  
+        )}
         {/* view transactions button */}
-        <TouchableOpacity 
-        style={styles.viewTransactionsButton} 
-        onPress={() => router.push("/(tabs)/transactions")}>
+        <TouchableOpacity
+          style={styles.viewTransactionsButton}
+          onPress={() => router.push("/(tabs)/transactions")}
+        >
           <Text style={styles.buttonText}>View Transactions</Text>
         </TouchableOpacity>
-        <TouchableOpacity 
-        style={styles.transferButton} 
-        onPress={() => router.push("/(tabs)/users")}>
+        <TouchableOpacity
+          style={styles.transferButton}
+          onPress={() => router.push("/(tabs)/users")}
+        >
           <Text style={styles.buttonText}>Transfer</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
-
-
-
 
 export default Home;
 

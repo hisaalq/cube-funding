@@ -1,6 +1,12 @@
-import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
+import React, { useState } from "react";
+import {
+  Button,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 interface AllUsers {
   username: string;
   balance: number;
@@ -8,15 +14,48 @@ interface AllUsers {
   _id: string;
 }
 const UserItem = (UserInfo: AllUsers) => {
+  const [showTextInput, setShowTextInput] = useState(false);
+
+  const handleTransfer = () => {};
   return (
     <View style={styles.background}>
       <View style={styles.container}>
         {/* <Image source={{ uri: UserInfo.image }} style={styles.image} /> */}
         <Text style={styles.username}>{UserInfo.username}</Text>
         <Text style={styles.balance}>Balance: {UserInfo.balance}</Text>
-        <TouchableOpacity style={styles.loginButton}>
-          <Text style={styles.buttonText}>Transfer</Text>
-        </TouchableOpacity>
+
+        {showTextInput ? (
+          <View
+            style={{
+              flexDirection: "row",
+              borderWidth: 1,
+              borderColor: "gray",
+              padding: 5,
+              borderRadius: 10,
+              width: "100%",
+              justifyContent: "space-around",
+            }}
+          >
+            <TextInput
+              onChangeText={(amount) => {
+                UserInfo.balance + amount;
+              }}
+              placeholder="Insert amount"
+            />
+            <Button onPress={() => setShowTextInput(false)} title="Send" />
+          </View>
+        ) : (
+          <TouchableOpacity
+            onPress={() => {
+              setShowTextInput(true);
+            }}
+            style={styles.loginButton}
+          >
+            <Text style={styles.buttonText}>
+              {UserInfo.balance < 0 ? "تصدق" : "Transfer"}
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
@@ -70,6 +109,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 30,
     color: "#333",
+    textAlign: "center",
   },
   input: {
     width: "100%",
