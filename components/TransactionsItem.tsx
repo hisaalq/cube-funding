@@ -1,5 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+
 interface MockTransactions {
   id: number;
   amount: number;
@@ -45,3 +46,31 @@ const styles = StyleSheet.create({
     color: "red",
   },
 });
+
+//import axios from "axios";
+//import { getToken } from "./storage";
+
+//export type Transaction = {
+  //id: string;
+  //type: "deposit" | "withdraw" | "transfer";
+  //amount: number;
+  //date: string;
+//};
+
+//export const getTransactions = async (): Promise<Transaction[]> => {
+  //const token = await getToken();
+  //const res = await axios.get("https://your-api.com/transactions", {
+    //headers: { Authorization: `Bearer ${token}` },
+  //});
+  //return res.data;
+//};
+
+//export const addTransaction = async (transaction: Omit<Transaction, "id" | "date">) => {
+  //const token = await getToken();
+  //const res = await axios.post(
+    //"https://your-api.com/transactions",
+    //transaction,
+    //{ headers: { Authorization: `Bearer ${token}` } }
+  //);
+   //return res.data; // updated transaction list or new transaction
+//};

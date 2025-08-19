@@ -1,6 +1,6 @@
 // create a user profile page
 
-import { getUserProfile } from "@/api/user";
+import { getUserProfile } from "@/api/users";
 import AuthContext from "@/context/AuthContext";
 import { UserProfile } from "@/types/UserProfile";
 import { useQuery } from "@tanstack/react-query";
