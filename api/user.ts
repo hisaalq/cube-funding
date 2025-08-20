@@ -1,6 +1,14 @@
 import { UserProfile } from "@/types/UserProfile";
 import instance from ".";
+import { getToken } from "./storage";
 
+export interface ApiUser {
+  _id: number;
+  username: string;
+  image?: string | null;
+  balance: number;
+  email?: string | null;
+}
 {
   /*update user image */
 }
@@ -29,7 +37,13 @@ export const getAllUsers = async () => {
 
   return data;
 };
-export const getUserId = async () => {
-  const { data } = await instance.get("/mini-project/api/auth/user/<userId>");
-  return data;
+export const getUserId = async (): Promise<number> => {
+  const token = await getToken();
+  const { data } = await instance.get<ApiUser>("/mini-project/api/auth/user", {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!data || typeof data._id !== "number") {
+    throw new Error("User ID missing or invalid in /auth/user response");
+  }
+  return data._id; // number
 };
