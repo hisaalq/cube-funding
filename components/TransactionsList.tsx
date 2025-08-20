@@ -153,10 +153,10 @@ const TransactionsList = () => {
             </Text>
             <Text style={item.type === "deposit" ? styles.green : styles.red}>
               {item.type === "deposit"
-                ? <AntDesign name="arrowdown" size={24} color="black" />
+                ? <AntDesign name="arrowdown" size={24} color="green" />
                 : item.type === "withdraw"
-                ?<AntDesign name="arrowup" size={24} color="black" />
-                :<Octicons name="arrow-switch" size={24} color="black" /> }
+                ?<AntDesign name="arrowup" size={24} color="red" />
+                :<Octicons name="arrow-switch" size={24} color="gray" /> }
             </Text>
             <Text>{new Date(item.createdAt).toLocaleDateString()}</Text>
             <Text style={{ color: "#007bff" }}>{item.type}</Text>
