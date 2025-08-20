@@ -30,28 +30,28 @@ const TransactionsList = () => {
   const handleSearch = (text: string) => {
     setSearch(text);
     if (data) {
-      setList(data.filter((item) => item.amount.toString().includes(text.trim())));
+      setList(
+        data.filter((item) => item.amount.toString().includes(text.trim()))
+      );
     }
   };
 
   const handleFilter = (type: string) => {
     if (!data) return;
-  
+
     if (type === "all") {
       setList(data);
     } else {
       setList(
         data.filter(
-          (item) =>
-            item.type &&
-            item.type.toLowerCase() === type.toLowerCase()
+          (item) => item.type && item.type.toLowerCase() === type.toLowerCase()
         )
       );
     }
   };
 
   if (isLoading) return <ActivityIndicator style={{ marginTop: 30 }} />;
-  
+
   return (
     <View style={styles.container}>
       {/*Search*/}
@@ -60,37 +60,51 @@ const TransactionsList = () => {
         placeholder="Search amount"
         keyboardType="numeric"
         value={search}
-        onChangeText={ (text) => handleSearch(text) }
+        onChangeText={(text) => handleSearch(text)}
       />
       {/*Filter*/}
       <View style={styles.filterContainer}>
-      <TouchableOpacity style={styles.button} onPress={() => handleFilter("all")}>
-        <Text style={styles.buttonText}>All</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={() => handleFilter("deposit")}>
-        <Text style={styles.buttonText}>Deposit</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={() => handleFilter("withdraw")}>
-        <Text style={styles.buttonText}>Withdraw</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={() => handleFilter("transfer")}>
-        <Text style={styles.buttonText}>Transfer</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => handleFilter("all")}
+        >
+          <Text style={styles.buttonText}>All</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => handleFilter("deposit")}
+        >
+          <Text style={styles.buttonText}>Deposit</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => handleFilter("withdraw")}
+        >
+          <Text style={styles.buttonText}>Withdraw</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => handleFilter("transfer")}
+        >
+          <Text style={styles.buttonText}>Transfer</Text>
+        </TouchableOpacity>
       </View>
-    {/*Transactions*/}
-    <ScrollView>
-      {list.map((item) => (
-        <View key={item._id} style={styles.transactionsContainer}>
-          <Text style={item.amount > 0 ? styles.green : styles.red}>
-            {item.amount > 0 ? "+ " : " "}
-            {item.amount}
-            {/*{item.type === "deposit" || item.type === "withdraw" ? item.type === "deposit" ? "+ " : "- " : " "}*/}
-          </Text>
-          <Text>{new Date(item.createdAt).toLocaleDateString()}</Text>
-          <Text style={{ color: "#007bff" }}>{item.type}</Text>
-        </View>
-      ))}
-    </ScrollView>
+      {/*Transactions*/}
+      <ScrollView>
+        {list.map((item) => (
+          <View key={item._id} style={styles.transactionsContainer}>
+            <Text style={item.type === "deposit" ? styles.green : styles.red}>
+              {item.type === "deposit"
+                ? `⬇️           ${item.amount}`
+                : item.type === "withdraw"
+                ? `⬆️           ${item.amount}`
+                : `🔁           ${item.amount}`}
+            </Text>
+            <Text>{new Date(item.createdAt).toLocaleDateString()}</Text>
+            <Text style={{ color: "#007bff" }}>{item.type}</Text>
+          </View>
+        ))}
+      </ScrollView>
     </View>
   );
 };

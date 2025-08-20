@@ -13,7 +13,6 @@ const TransactionsItem = (transactionsInfo: MockTransactions) => {
       <Text
         style={transactionsInfo.type === "deposit" ? styles.green : styles.red}
       >
-        {transactionsInfo.type !== "deposit" ? "- " : "+ "}
         {transactionsInfo.amount}
       </Text>
       <Text>{transactionsInfo.date}</Text>
