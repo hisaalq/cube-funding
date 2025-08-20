@@ -1,5 +1,7 @@
 import { getAllTransactions } from "@/api/transactions";
 import { UserTransaction } from "@/types/UserTransaction";
+import AntDesign from '@expo/vector-icons/AntDesign';
+import Octicons from '@expo/vector-icons/Octicons';
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useQuery } from "@tanstack/react-query";
 import React, { useMemo, useState } from "react";
@@ -88,15 +90,16 @@ const TransactionsList = () => {
         <TouchableOpacity style={styles.button} onPress={() => setTypeFilter("transfer")}>
           <Text style={styles.buttonText}>Transfer</Text>
         </TouchableOpacity>
-
+        </View>
+        <View style={styles.datePickerContainer}>
         <TouchableOpacity style={styles.button} onPress={() => setShowStartPicker(true)}>
           <Text style={styles.buttonText}>Start</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={() => setShowEndPicker(true)}>
           <Text style={styles.buttonText}>End</Text>
         </TouchableOpacity>
-      </View>
-
+      
+      
       {/* Selected date summary + Clear */}
       <View style={styles.dateSummaryRow}>
         <Text style={styles.dateSummaryText}>From: {fmt(startDate)}</Text>
@@ -115,6 +118,7 @@ const TransactionsList = () => {
       </View>
 
       {/* Pickers */}
+      
       {showStartPicker && (
         <DateTimePicker
           value={startDate || new Date()}
@@ -127,7 +131,6 @@ const TransactionsList = () => {
           maximumDate={endDate ?? undefined}
         />
       )}
-
       {showEndPicker && (
         <DateTimePicker
           value={endDate || new Date()}
@@ -140,14 +143,20 @@ const TransactionsList = () => {
           minimumDate={startDate ?? undefined}
         />
       )}
-
+      </View>
       {/* Transactions */}
       <ScrollView>
         {filteredList.map((item) => (
           <View key={item._id} style={styles.transactionsContainer}>
-            <Text style={item.amount > 0 ? styles.green : styles.red}>
-              {item.amount > 0 ? "+ " : "- "}
-              {item.amount}
+            <Text style={item.type === "deposit" ? styles.green : styles.red}>
+              {`${item.amount} KWD`}
+            </Text>
+            <Text style={item.type === "deposit" ? styles.green : styles.red}>
+              {item.type === "deposit"
+                ? <AntDesign name="arrowdown" size={24} color="black" />
+                : item.type === "withdraw"
+                ?<AntDesign name="arrowup" size={24} color="black" />
+                :<Octicons name="arrow-switch" size={24} color="black" /> }
             </Text>
             <Text>{new Date(item.createdAt).toLocaleDateString()}</Text>
             <Text style={{ color: "#007bff" }}>{item.type}</Text>
@@ -239,4 +248,11 @@ const styles = StyleSheet.create({
   },
   green: { color: "green" },
   red: { color: "red" },
+  datePickerContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "flex-start",
+    gap: 10,
+    marginBottom: 10,
+  },
 });
