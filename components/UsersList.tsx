@@ -7,7 +7,7 @@ interface AllUsers {
   username: string;
   balance: number;
   image: string;
-  _id: string;
+  _id: number;
 }
 const UsersList = () => {
   const { data, isSuccess, isLoading } = useQuery({
@@ -16,22 +16,21 @@ const UsersList = () => {
   });
   if (isLoading) return <ActivityIndicator style={{ marginTop: 30 }} />;
   return (
-<View>
-
-    <ScrollView style={{ backgroundColor: "beige" }}>
-      {isSuccess &&
-        data.map((item: AllUsers) => (
-          <View key={item._id}>
-            <UserItem
-              username={item.username}
-              balance={item.balance}
-              image={item.image}
-              _id={item._id}
-            />
-          </View>
-        ))}
-    </ScrollView>
-</View>
+    <View>
+      <ScrollView style={{ backgroundColor: "beige" }}>
+        {isSuccess &&
+          data.map((item: AllUsers) => (
+            <View key={item._id}>
+              <UserItem
+                username={item.username}
+                balance={item.balance}
+                image={item.image}
+                _id={item._id}
+              />
+            </View>
+          ))}
+      </ScrollView>
+    </View>
   );
 };
 

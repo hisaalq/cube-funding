@@ -2,8 +2,10 @@ import { depositMoney, withdrawMoney } from "@/api/transactions";
 import { getProfile } from "@/api/user";
 import { UserProfile } from "@/types/UserProfile";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
+  Button,
   StyleSheet,
   Text,
   TextInput,
@@ -77,14 +79,9 @@ const Home = () => {
           Your current balance is {userBalance}
         </Text>
         {/* deposit button */}
-        <TouchableOpacity
-          style={styles.depositButton}
-          onPress={() => setIsDepositModalVisible(true)}
-        >
-          <Text style={styles.buttonText}>Deposit</Text>
-        </TouchableOpacity>
-        {isDepositModalVisible && (
-          <View style={styles.modalContainer}>
+
+        {isDepositModalVisible ? (
+          <View style={{ flexDirection: "row" }}>
             <TextInput
               style={styles.input}
               placeholder="Enter amount to deposit"
@@ -92,23 +89,21 @@ const Home = () => {
               value={depositAmount.toString()}
               onChangeText={(text) => setDepositAmount(Number(text))}
             />
-            <TouchableOpacity
-              style={styles.depositButton}
-              onPress={handleConfirmDeposit}
-            >
-              <Text style={styles.buttonText}>Confirm</Text>
-            </TouchableOpacity>
+            <Button onPress={handleConfirmDeposit} title="Send" />
           </View>
+        ) : (
+          <TouchableOpacity
+            style={styles.depositButton}
+            onPress={() => setIsDepositModalVisible(true)}
+          >
+            <Text style={styles.buttonText}>Deposit</Text>
+          </TouchableOpacity>
         )}
+
         {/* withdraw Button */}
-        <TouchableOpacity
-          style={styles.withdrawButton}
-          onPress={() => setIsWithdrawModalVisible(true)}
-        >
-          <Text style={styles.buttonText}>Withdraw</Text>
-        </TouchableOpacity>
-        {isWithdrawModalVisible && (
-          <View style={styles.modalContainer}>
+
+        {isWithdrawModalVisible ? (
+          <View style={{ flexDirection: "row" }}>
             <TextInput
               style={styles.input}
               placeholder="Enter amount to withdraw"
@@ -116,24 +111,27 @@ const Home = () => {
               value={withdrawAmount.toString()}
               onChangeText={(text) => setWithdrawAmount(Number(text))}
             />
-            <TouchableOpacity
-              style={styles.withdrawButton}
-              onPress={handleConfirmWithdraw}
-            >
-              <Text style={styles.buttonText}>Confirm</Text>
-            </TouchableOpacity>
+            <Button onPress={handleConfirmWithdraw} title="Send" />
           </View>
+        ) : (
+          <TouchableOpacity
+            style={styles.withdrawButton}
+            onPress={() => setIsWithdrawModalVisible(true)}
+          >
+            <Text style={styles.buttonText}>Withdraw</Text>
+          </TouchableOpacity>
         )}
+
         {/* view transactions button */}
         <TouchableOpacity
           style={styles.viewTransactionsButton}
-          // onPress={() => router.push("/(tabs)/transactions")}
+          onPress={() => router.push("/(protected)/(tabs)/transactions")}
         >
           <Text style={styles.buttonText}>View Transactions</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.transferButton}
-          // onPress={() => router.push("/(tabs)/users")}
+          onPress={() => router.push("/(protected)/(tabs)/users")}
         >
           <Text style={styles.buttonText}>Transfer</Text>
         </TouchableOpacity>
@@ -172,7 +170,7 @@ const styles = StyleSheet.create({
     color: "#00244c",
   },
   input: {
-    width: "100%",
+    width: "80%",
     height: 50,
     borderColor: "#ddd",
     borderWidth: 1,

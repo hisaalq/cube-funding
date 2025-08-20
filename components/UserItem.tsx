@@ -87,36 +87,32 @@ const UserItem = (user: Props) => {
       <View style={styles.container}>
         <Image source={imageSource} style={styles.image} />
         {showTextInput ? (
-         <View style={styles.transferRow}>
-         <TextInput
-           style={styles.amountInput}
-           value={amountStr}
-           onChangeText={setAmountStr}
-           placeholder="Insert amount"
-           keyboardType="decimal-pad"
-           inputMode="decimal"
-         />
-         <Button
+          <View style={styles.transferRow}>
+            <TextInput
+              style={styles.amountInput}
+              value={amountStr}
+              onChangeText={setAmountStr}
+              placeholder="Insert amount"
+              keyboardType="decimal-pad"
+              inputMode="decimal"
+            />
+            <Button
               title={submitting ? "Sending..." : "Send"}
               onPress={handleTransfer}
               disabled={submitting}
             />
           </View>
-          ) : (
-            <TouchableOpacity
-              onPress={() => setShowTextInput(true)}
-              style={styles.transferButton}
-            >
-              <Text style={styles.buttonText}>
-                {Number(user.balance) < 0 ? "تصدق" : "Transfer"}
-              </Text>
-            </TouchableOpacity>
-          )}
-        </View>
+        ) : (
+          <TouchableOpacity onPress={() => setShowTextInput(true)}>
+            <Text style={styles.buttonText}>
+              {Number(user.balance) < 0 ? "تصدق" : "Transfer"}
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
-    );
-  };
-          
+    </View>
+  );
+};
 
 export default UserItem;
 
