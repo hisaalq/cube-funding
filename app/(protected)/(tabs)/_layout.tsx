@@ -1,10 +1,10 @@
-import { getToken } from "@/api/storage";
+import { deleteToken, getToken } from "@/api/storage";
 import AuthContext from "@/context/AuthContext";
 import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Tabs } from "expo-router";
+import { router, Tabs } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator } from "react-native";
 export default function RootLayout() {
@@ -20,6 +20,11 @@ export default function RootLayout() {
     }
     setReady(true);
   };
+  const handleLogout = async () => {
+    await deleteToken();
+    setIsAuthenticated(false);
+    router.replace("/(auth)/mainPage");
+  };
   useEffect(() => {
     checkToken();
   }, []);
@@ -34,9 +39,13 @@ export default function RootLayout() {
           setIsAuthenticated,
         }}
       >
+        
         <Tabs
           screenOptions={{
             tabBarActiveTintColor: "#007bff",
+            headerRight: () => (
+              <MaterialIcons name="logout" size={24} color="black" onPress={() => handleLogout()} />
+            ),
           }}
         >
           <Tabs.Screen

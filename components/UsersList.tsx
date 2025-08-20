@@ -16,6 +16,8 @@ const UsersList = () => {
   });
   if (isLoading) return <ActivityIndicator style={{ marginTop: 30 }} />;
   return (
+<View>
+
     <ScrollView style={{ backgroundColor: "beige" }}>
       {isSuccess &&
         data.map((item: AllUsers) => (
@@ -29,6 +31,7 @@ const UsersList = () => {
           </View>
         ))}
     </ScrollView>
+</View>
   );
 };
 
