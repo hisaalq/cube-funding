@@ -24,7 +24,7 @@ const Home = () => {
   );
 
   useEffect(() => {
-    if (userInfo?.balance) {
+    if (userInfo?.balance !== undefined) {
       setUserBalance(userInfo.balance);
     }
   }, [userInfo]);
@@ -36,26 +36,22 @@ const Home = () => {
 
   const balanceMutation = useMutation({
     mutationFn: depositMoney,
-    onSuccess: (amount) => {
-      queryClient.setQueryData(["userInfo"], amount);
+    onSuccess: (updatedUser) => {
+      queryClient.setQueryData(["userInfo"], updatedUser);
     },
   });
 
-  const transactionMutation = useMutation({
-    mutationFn: (transaction: {
-      type: "deposit" | "withdraw";
-      amount: number;
-    }) => depositMoney(transaction.amount) || withdrawMoney(transaction.amount),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+  const balanceMutation2 = useMutation({
+    mutationFn: withdrawMoney,
+    onSuccess: (updatedUser) => {
+      queryClient.setQueryData(["userInfo"], updatedUser);
     },
   });
 
   const handleConfirmDeposit = () => {
     const amount = parseFloat(depositAmount.toString());
     if (!isNaN(amount) && amount > 0) {
-      balanceMutation.mutate(amount); // positive for deposit
-      transactionMutation.mutate({ type: "deposit", amount });
+      balanceMutation.mutate(amount);
     }
     setDepositAmount(0);
     setIsDepositModalVisible(false);
@@ -64,8 +60,7 @@ const Home = () => {
   const handleConfirmWithdraw = () => {
     const amount = parseFloat(withdrawAmount.toString());
     if (!isNaN(amount) && amount > 0) {
-      balanceMutation.mutate(-amount); // negative for withdraw
-      transactionMutation.mutate({ type: "withdraw", amount });
+      balanceMutation2.mutate(amount);
     }
     setWithdrawAmount(0);
     setIsWithdrawModalVisible(false);
@@ -78,7 +73,6 @@ const Home = () => {
         <Text style={styles.subtitle}>
           Your current balance is {userBalance}
         </Text>
-        {/* deposit button */}
 
         {isDepositModalVisible ? (
           <View style={{ flexDirection: "row" }}>
@@ -100,8 +94,6 @@ const Home = () => {
           </TouchableOpacity>
         )}
 
-        {/* withdraw Button */}
-
         {isWithdrawModalVisible ? (
           <View style={{ flexDirection: "row" }}>
             <TextInput
@@ -122,7 +114,6 @@ const Home = () => {
           </TouchableOpacity>
         )}
 
-        {/* view transactions button */}
         <TouchableOpacity
           style={styles.viewTransactionsButton}
           onPress={() => router.push("/(protected)/(tabs)/transactions")}
@@ -155,11 +146,11 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     alignItems: "center",
-    shadowColor: "#000", // shadow color
-    shadowOffset: { width: 0, height: 4 }, // first part of box-shadow
-    shadowOpacity: 0.2, // alpha of first shadow
-    shadowRadius: 8, // blur radius
-    elevation: 6, // Android shadow
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 6,
   },
   title: {
     fontSize: 28,
@@ -223,32 +214,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 10,
   },
-  disableButton: {
-    backgroundColor: "#98c6f8ff",
-  },
   buttonText: {
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
-  },
-  logo: {
-    width: 100,
-    height: 50,
-    marginBottom: 20,
-  },
-  image: {
-    width: 100,
-    height: 100,
-    marginBottom: 20,
-  },
-  addImage: {
-    width: 80,
-    height: 90,
-    marginBottom: 20,
-  },
-  forgotPassword: {
-    color: "#007bff",
-    marginBottom: 20,
   },
   subtitle: {
     fontSize: 18,
@@ -256,15 +225,5 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: "GothicA1-Regular",
     color: "#00244c",
-  },
-  modalContainer: {
-    flex: 1,
-    width: "100%",
-    height: 100,
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
-    padding: 20,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 10,
   },
 });
