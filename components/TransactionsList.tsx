@@ -1,7 +1,7 @@
 import { getAllTransactions } from "@/api/transactions";
 import { UserTransaction } from "@/types/UserTransaction";
-import AntDesign from '@expo/vector-icons/AntDesign';
-import Octicons from '@expo/vector-icons/Octicons';
+import AntDesign from "@expo/vector-icons/AntDesign";
+import Octicons from "@expo/vector-icons/Octicons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useQuery } from "@tanstack/react-query";
 import React, { useMemo, useState } from "react";
@@ -23,7 +23,9 @@ const TransactionsList = () => {
 
   // --- UI state
   const [search, setSearch] = useState("");
-  const [typeFilter, setTypeFilter] = useState<"all" | "deposit" | "withdraw" | "transfer">("all");
+  const [typeFilter, setTypeFilter] = useState<
+    "all" | "deposit" | "withdraw" | "transfer"
+  >("all");
 
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -31,8 +33,10 @@ const TransactionsList = () => {
   const [showEndPicker, setShowEndPicker] = useState(false);
 
   // --- helpers
-  const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
-  const endOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
+  const startOfDay = (d: Date) =>
+    new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
+  const endOfDay = (d: Date) =>
+    new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
   const fmt = (d: Date | null) => (d ? d.toLocaleDateString() : "—");
 
   // --- combined filtering (amount search + type + date range)
@@ -43,7 +47,8 @@ const TransactionsList = () => {
 
     return data.filter((item) => {
       // Search by amount (string compare for simplicity)
-      const matchesSearch = q.length === 0 || item.amount.toString().toLowerCase().includes(q);
+      const matchesSearch =
+        q.length === 0 || item.amount.toString().toLowerCase().includes(q);
       if (!matchesSearch) return false;
 
       // Type filter (backend field assumed "type")
@@ -78,71 +83,112 @@ const TransactionsList = () => {
 
       {/* Filters */}
       <View style={styles.filterContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => setTypeFilter("all")}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => setTypeFilter("all")}
+        >
           <Text style={styles.buttonText}>All</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => setTypeFilter("deposit")}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => setTypeFilter("deposit")}
+        >
           <Text style={styles.buttonText}>Deposit</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => setTypeFilter("withdraw")}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => setTypeFilter("withdraw")}
+        >
           <Text style={styles.buttonText}>Withdraw</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => setTypeFilter("transfer")}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => setTypeFilter("transfer")}
+        >
           <Text style={styles.buttonText}>Transfer</Text>
         </TouchableOpacity>
-        </View>
-        <View style={styles.datePickerContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => setShowStartPicker(true)}>
-          <Text style={styles.buttonText}>Start</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => setShowEndPicker(true)}>
-          <Text style={styles.buttonText}>End</Text>
-        </TouchableOpacity>
-      
-      
-      {/* Selected date summary + Clear */}
-      <View style={styles.dateSummaryRow}>
-        <Text style={styles.dateSummaryText}>From: {fmt(startDate)}</Text>
-        <Text style={styles.dateSummaryText}>To: {fmt(endDate)}</Text>
-        {(startDate || endDate) && (
-          <TouchableOpacity
-            style={[styles.button, { height: 32, marginTop: 0, paddingHorizontal: 10 }]}
-            onPress={() => {
-              setStartDate(null);
-              setEndDate(null);
-            }}
-          >
-            <Text style={styles.buttonText}>Clear</Text>
-          </TouchableOpacity>
-        )}
       </View>
+      <View style={styles.datePickerContainer}>
+        {/* Selected date summary + Clear */}
+        <View>
+          <View style={styles.dateSummaryRow}>
+            <View
+              style={{
+                flexDirection: "row",
+                gap: 20,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <View
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: 10,
+                  marginTop: 30,
+                }}
+              >
+                <TouchableOpacity onPress={() => setShowStartPicker(true)}>
+                  <Text style={styles.dateSummaryText}>
+                    From: {fmt(startDate)}
+                  </Text>
+                </TouchableOpacity>
+                {showStartPicker && (
+                  <DateTimePicker
+                    value={startDate || new Date()}
+                    mode="date"
+                    display="default"
+                    onChange={(_, date) => {
+                      setShowStartPicker(false);
+                      if (date) setStartDate(date);
+                    }}
+                    maximumDate={endDate ?? undefined}
+                  />
+                )}
+              </View>
+              <View
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: 10,
+                  marginTop: 30,
+                }}
+              >
+                <TouchableOpacity onPress={() => setShowEndPicker(true)}>
+                  <Text style={styles.dateSummaryText}>To: {fmt(endDate)}</Text>
+                </TouchableOpacity>
+                {showEndPicker && (
+                  <DateTimePicker
+                    value={endDate || new Date()}
+                    mode="date"
+                    display="default"
+                    onChange={(_, date) => {
+                      setShowEndPicker(false);
+                      if (date) setEndDate(date);
+                    }}
+                    minimumDate={startDate ?? undefined}
+                  />
+                )}
+              </View>
+            </View>
+            {(startDate || endDate) && (
+              <TouchableOpacity
+                style={[
+                  styles.button,
+                  { height: 32, marginTop: 0, paddingHorizontal: 10 },
+                ]}
+                onPress={() => {
+                  setStartDate(null);
+                  setEndDate(null);
+                }}
+              >
+                <Text style={styles.buttonText}>Clear</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
 
-      {/* Pickers */}
-      
-      {showStartPicker && (
-        <DateTimePicker
-          value={startDate || new Date()}
-          mode="date"
-          display="default"
-          onChange={(_, date) => {
-            setShowStartPicker(false);
-            if (date) setStartDate(date);
-          }}
-          maximumDate={endDate ?? undefined}
-        />
-      )}
-      {showEndPicker && (
-        <DateTimePicker
-          value={endDate || new Date()}
-          mode="date"
-          display="default"
-          onChange={(_, date) => {
-            setShowEndPicker(false);
-            if (date) setEndDate(date);
-          }}
-          minimumDate={startDate ?? undefined}
-        />
-      )}
+        {/* Pickers */}
       </View>
       {/* Transactions */}
       <ScrollView>
@@ -152,18 +198,22 @@ const TransactionsList = () => {
               {`${item.amount} KWD`}
             </Text>
             <Text style={item.type === "deposit" ? styles.green : styles.red}>
-              {item.type === "deposit"
-                ? <AntDesign name="arrowdown" size={24} color="green" />
-                : item.type === "withdraw"
-                ?<AntDesign name="arrowup" size={24} color="red" />
-                :<Octicons name="arrow-switch" size={24} color="gray" /> }
+              {item.type === "deposit" ? (
+                <AntDesign name="arrowdown" size={24} color="green" />
+              ) : item.type === "withdraw" ? (
+                <AntDesign name="arrowup" size={24} color="red" />
+              ) : (
+                <Octicons name="arrow-switch" size={24} color="gray" />
+              )}
             </Text>
             <Text>{new Date(item.createdAt).toLocaleDateString()}</Text>
             <Text style={{ color: "#007bff" }}>{item.type}</Text>
           </View>
         ))}
         {filteredList.length === 0 && (
-          <Text style={{ textAlign: "center", marginTop: 16 }}>No transactions match your filters.</Text>
+          <Text style={{ textAlign: "center", marginTop: 16 }}>
+            No transactions match your filters.
+          </Text>
         )}
       </ScrollView>
     </View>
@@ -223,7 +273,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   dateSummaryRow: {
-    flexDirection: "row",
+    // flexDirection: "row",
     justifyContent: "center",
     gap: 16,
     alignItems: "center",

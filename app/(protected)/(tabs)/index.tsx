@@ -3,7 +3,7 @@ import { getProfile } from "@/api/user";
 import { UserProfile } from "@/types/UserProfile";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Button,
   StyleSheet,
@@ -13,113 +13,159 @@ import {
   View,
 } from "react-native";
 
+type Txn = { type: "deposit" | "withdraw"; amount: number };
+
 const Home = () => {
   const queryClient = useQueryClient();
-  const { data: userInfo } = useQuery<UserProfile>({
+
+  const { data: userInfo, isLoading } = useQuery<UserProfile>({
     queryKey: ["userInfo"],
     queryFn: getProfile,
   });
-  const [userBalance, setUserBalance] = useState<number>(
-    userInfo?.balance || 0
-  );
-
-  useEffect(() => {
-    if (userInfo?.balance !== undefined) {
-      setUserBalance(userInfo.balance);
-    }
-  }, [userInfo]);
 
   const [isDepositModalVisible, setIsDepositModalVisible] = useState(false);
   const [isWithdrawModalVisible, setIsWithdrawModalVisible] = useState(false);
-  const [depositAmount, setDepositAmount] = useState<number>(0);
-  const [withdrawAmount, setWithdrawAmount] = useState<number>(0);
+  const [depositAmount, setDepositAmount] = useState<string>("");
+  const [withdrawAmount, setWithdrawAmount] = useState<string>("");
 
-  const balanceMutation = useMutation({
-    mutationFn: depositMoney,
-    onSuccess: (updatedUser) => {
-      queryClient.setQueryData(["userInfo"], updatedUser);
+  // Single mutation + optimistic update for instant UI changes
+  const txnMutation = useMutation({
+    mutationFn: async ({ type, amount }: Txn) => {
+      if (type === "deposit") {
+        return await depositMoney(amount);
+      }
+      return await withdrawMoney(amount);
     },
-  });
+    onMutate: async ({ type, amount }) => {
+      // Cancel any outgoing refetches for userInfo
+      await queryClient.cancelQueries({ queryKey: ["userInfo"] });
 
-  const balanceMutation2 = useMutation({
-    mutationFn: withdrawMoney,
-    onSuccess: (updatedUser) => {
-      queryClient.setQueryData(["userInfo"], updatedUser);
+      // Snapshot previous value
+      const prev = queryClient.getQueryData<UserProfile>(["userInfo"]);
+
+      // Optimistically update to the new value
+      if (prev) {
+        const nextBalance =
+          type === "deposit" ? prev.balance + amount : prev.balance - amount;
+        queryClient.setQueryData<UserProfile>(["userInfo"], {
+          ...prev,
+          balance: nextBalance,
+        });
+      }
+
+      // Context for rollback
+      return { prev };
+    },
+    onError: (_err, _vars, ctx) => {
+      // Rollback on error
+      if (ctx?.prev) {
+        queryClient.setQueryData(["userInfo"], ctx.prev);
+      }
+    },
+    onSettled: () => {
+      // Ensure server truth wins after mutation finishes
+      queryClient.invalidateQueries({ queryKey: ["userInfo"] });
     },
   });
 
   const handleConfirmDeposit = () => {
-    const amount = parseFloat(depositAmount.toString());
+    const amount = parseFloat(depositAmount);
     if (!isNaN(amount) && amount > 0) {
-      balanceMutation.mutate(amount);
+      txnMutation.mutate({ type: "deposit", amount });
     }
-    setDepositAmount(0);
+    setDepositAmount("");
     setIsDepositModalVisible(false);
   };
 
   const handleConfirmWithdraw = () => {
-    const amount = parseFloat(withdrawAmount.toString());
+    const amount = parseFloat(withdrawAmount);
     if (!isNaN(amount) && amount > 0) {
-      balanceMutation2.mutate(amount);
+      txnMutation.mutate({ type: "withdraw", amount });
     }
-    setWithdrawAmount(0);
+    setWithdrawAmount("");
     setIsWithdrawModalVisible(false);
   };
+
+  const balance = userInfo?.balance ?? 0;
 
   return (
     <View style={styles.background}>
       <View style={styles.container}>
-        <Text style={styles.title}>Welcome Back, {userInfo?.username}!</Text>
-        <Text style={styles.subtitle}>
-          Your current balance is {userBalance}
+        <Text style={styles.title}>
+          {isLoading
+            ? "Loading..."
+            : `Welcome Back, ${userInfo?.username || ""}!`}
         </Text>
 
+        <Text style={styles.subtitle}>Your current balance is {balance}</Text>
+
+        {/* Deposit */}
         {isDepositModalVisible ? (
           <View style={{ flexDirection: "row" }}>
             <TextInput
               style={styles.input}
               placeholder="Enter amount to deposit"
               keyboardType="numeric"
-              value={depositAmount.toString()}
-              onChangeText={(text) => setDepositAmount(Number(text))}
+              value={depositAmount}
+              onChangeText={setDepositAmount}
             />
-            <Button onPress={handleConfirmDeposit} title="Send" />
+            <Button
+              onPress={handleConfirmDeposit}
+              title={txnMutation.isPending ? "Sending..." : "Send"}
+              disabled={txnMutation.isPending}
+            />
           </View>
         ) : (
           <TouchableOpacity
-            style={styles.depositButton}
+            style={[
+              styles.depositButton,
+              txnMutation.isPending && styles.disableButton,
+            ]}
+            disabled={txnMutation.isPending}
             onPress={() => setIsDepositModalVisible(true)}
           >
             <Text style={styles.buttonText}>Deposit</Text>
           </TouchableOpacity>
         )}
 
+        {/* Withdraw */}
         {isWithdrawModalVisible ? (
           <View style={{ flexDirection: "row" }}>
             <TextInput
               style={styles.input}
               placeholder="Enter amount to withdraw"
               keyboardType="numeric"
-              value={withdrawAmount.toString()}
-              onChangeText={(text) => setWithdrawAmount(Number(text))}
+              value={withdrawAmount}
+              onChangeText={setWithdrawAmount}
             />
-            <Button onPress={handleConfirmWithdraw} title="Send" />
+            <Button
+              onPress={handleConfirmWithdraw}
+              title={txnMutation.isPending ? "Sending..." : "Send"}
+              disabled={txnMutation.isPending}
+            />
           </View>
         ) : (
           <TouchableOpacity
-            style={styles.withdrawButton}
+            style={[
+              styles.withdrawButton,
+              txnMutation.isPending && styles.disableButton,
+            ]}
+            disabled={txnMutation.isPending}
             onPress={() => setIsWithdrawModalVisible(true)}
           >
             <Text style={styles.buttonText}>Withdraw</Text>
           </TouchableOpacity>
         )}
 
+        {/* View transactions */}
         <TouchableOpacity
           style={styles.viewTransactionsButton}
           onPress={() => router.push("/(protected)/(tabs)/transactions")}
         >
           <Text style={styles.buttonText}>View Transactions</Text>
         </TouchableOpacity>
+
+        {/* Transfer */}
         <TouchableOpacity
           style={styles.transferButton}
           onPress={() => router.push("/(protected)/(tabs)/users")}
@@ -213,6 +259,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 8,
     marginBottom: 10,
+  },
+  disableButton: {
+    opacity: 0.7,
   },
   buttonText: {
     color: "#fff",
