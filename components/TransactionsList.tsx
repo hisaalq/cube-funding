@@ -52,10 +52,8 @@ const TransactionsList = () => {
       if (!matchesSearch) return false;
 
       // Type filter (backend field assumed "type")
-      if (typeFilter !== "all") {
-        const t = item.type?.toLowerCase?.();
-        if (t !== typeFilter) return false;
-      }
+      if (typeFilter !== "all" && item.type?.toLowerCase() !== typeFilter)
+        return false;
 
       // Date filter (inclusive)
       if (startDate || endDate) {
@@ -83,113 +81,72 @@ const TransactionsList = () => {
 
       {/* Filters */}
       <View style={styles.filterContainer}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => setTypeFilter("all")}
-        >
-          <Text style={styles.buttonText}>All</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => setTypeFilter("deposit")}
-        >
-          <Text style={styles.buttonText}>Deposit</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => setTypeFilter("withdraw")}
-        >
-          <Text style={styles.buttonText}>Withdraw</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => setTypeFilter("transfer")}
-        >
-          <Text style={styles.buttonText}>Transfer</Text>
-        </TouchableOpacity>
+        {(["all", "deposit", "withdraw", "transfer"] as const).map((type) => (
+          <TouchableOpacity
+            key={type}
+            style={[styles.button, typeFilter === type && styles.activeButton]}
+            onPress={() => setTypeFilter(type)}
+          >
+            <Text style={styles.buttonText}>
+              {type.charAt(0).toUpperCase() + type.slice(1)}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
+
+      {/* Date Pickers */}
       <View style={styles.datePickerContainer}>
-        {/* Selected date summary + Clear */}
-        <View>
-          <View style={styles.dateSummaryRow}>
-            <View
-              style={{
-                flexDirection: "row",
-                gap: 20,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <View
-                style={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                  gap: 10,
-                  marginTop: 30,
+        <View style={styles.dateSummaryRow}>
+          <View style={styles.dateColumn}>
+            <TouchableOpacity onPress={() => setShowStartPicker(true)}>
+              <Text style={styles.dateSummaryText}>From: {fmt(startDate)}</Text>
+            </TouchableOpacity>
+            {showStartPicker && (
+              <DateTimePicker
+                value={startDate || new Date()}
+                mode="date"
+                display="default"
+                maximumDate={endDate ?? undefined}
+                onChange={(event, date) => {
+                  if (event.type === "set" && date) setStartDate(date);
+                  setShowStartPicker(false);
                 }}
-              >
-                <TouchableOpacity onPress={() => setShowStartPicker(true)}>
-                  <Text style={styles.dateSummaryText}>
-                    From: {fmt(startDate)}
-                  </Text>
-                </TouchableOpacity>
-                {showStartPicker && (
-                  <DateTimePicker
-                    value={startDate || new Date()}
-                    mode="date"
-                    display="default"
-                    onChange={(_, date) => {
-                      setShowStartPicker(false);
-                      if (date) setStartDate(date);
-                    }}
-                    maximumDate={endDate ?? undefined}
-                  />
-                )}
-              </View>
-              <View
-                style={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                  gap: 10,
-                  marginTop: 30,
-                }}
-              >
-                <TouchableOpacity onPress={() => setShowEndPicker(true)}>
-                  <Text style={styles.dateSummaryText}>To: {fmt(endDate)}</Text>
-                </TouchableOpacity>
-                {showEndPicker && (
-                  <DateTimePicker
-                    value={endDate || new Date()}
-                    mode="date"
-                    display="default"
-                    onChange={(_, date) => {
-                      setShowEndPicker(false);
-                      if (date) setEndDate(date);
-                    }}
-                    minimumDate={startDate ?? undefined}
-                  />
-                )}
-              </View>
-            </View>
-            {(startDate || endDate) && (
-              <TouchableOpacity
-                style={[
-                  styles.button,
-                  { height: 32, marginTop: 0, paddingHorizontal: 10 },
-                ]}
-                onPress={() => {
-                  setStartDate(null);
-                  setEndDate(null);
-                }}
-              >
-                <Text style={styles.buttonText}>Clear</Text>
-              </TouchableOpacity>
+              />
             )}
           </View>
-        </View>
 
-        {/* Pickers */}
+          <View style={styles.dateColumn}>
+            <TouchableOpacity onPress={() => setShowEndPicker(true)}>
+              <Text style={styles.dateSummaryText}>To: {fmt(endDate)}</Text>
+            </TouchableOpacity>
+            {showEndPicker && (
+              <DateTimePicker
+                value={endDate || new Date()}
+                mode="date"
+                display="default"
+                minimumDate={startDate ?? undefined}
+                onChange={(event, date) => {
+                  if (event.type === "set" && date) setEndDate(date);
+                  setShowEndPicker(false);
+                }}
+              />
+            )}
+          </View>
+
+          {(startDate || endDate) && (
+            <TouchableOpacity
+              style={[styles.button, styles.clearButton]}
+              onPress={() => {
+                setStartDate(null);
+                setEndDate(null);
+              }}
+            >
+              <Text style={styles.buttonText}>Clear</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
+
       {/* Transactions */}
       <ScrollView>
         {filteredList.map((item) => (
@@ -266,6 +223,14 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 6,
   },
+  activeButton: {
+    backgroundColor: "#0056b3",
+  },
+  clearButton: {
+    height: 32,
+    marginTop: 0,
+    paddingHorizontal: 10,
+  },
   buttonText: {
     color: "#fff",
     fontSize: 14,
@@ -273,11 +238,16 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   dateSummaryRow: {
-    // flexDirection: "row",
     justifyContent: "center",
     gap: 16,
     alignItems: "center",
     marginBottom: 10,
+  },
+  dateColumn: {
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 10,
+    marginTop: 30,
   },
   dateSummaryText: {
     color: "#00244c",
