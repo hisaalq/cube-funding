@@ -19,7 +19,7 @@ const IMAGE_BASE_URL = "https://react-bank-project.eapi.joincoded.com";
 
 const UserItem = (user: Props) => {
   const [showTextInput, setShowTextInput] = useState(false);
-  const [amountStr, setAmountStr] = useState("");
+  const [amount, setAmount] = useState<number>(0);
   const [myUserId, setMyUserId] = useState<number | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [loadingId, setLoadingId] = useState(true);
@@ -27,7 +27,7 @@ const UserItem = (user: Props) => {
   useEffect(() => {
     (async () => {
       try {
-        const id = await getUserId(); // number
+        const id = await getUserId();
         setMyUserId(id);
       } catch (e) {
         console.warn("Failed to fetch current user id", e);
@@ -40,8 +40,7 @@ const UserItem = (user: Props) => {
 
   const imageSource = (() => {
     const img = user.image ?? "";
-    if (img.startsWith("http://") || img.startsWith("https://"))
-      return { uri: img };
+    if (img.startsWith("http://") || img.startsWith("https://")) return { uri: img };
     if (img.length > 0) {
       const withSlash = img.startsWith("/") ? img : `/${img}`;
       return { uri: `${IMAGE_BASE_URL}${withSlash}` };
@@ -50,11 +49,10 @@ const UserItem = (user: Props) => {
   })();
 
   const formattedBalance = `${Number(user.balance ?? 0).toFixed(3)} KWD`;
-  const recipientId = user._id; // numeric, per your interface
+  const recipientId = user._id;
 
   const handleTransfer = async () => {
-    const amount = parseFloat(amountStr);
-    if (isNaN(amount) || amount <= 0) {
+    if (amount === null || !isFinite(amount) || amount <= 0) {
       Alert.alert("Invalid amount", "Please enter a positive number.");
       return;
     }
@@ -66,27 +64,37 @@ const UserItem = (user: Props) => {
       Alert.alert("Invalid recipient", "You cannot transfer to this user.");
       return;
     }
+    if (amount > Number(user.balance ?? 0)) {
+      Alert.alert("Insufficient funds", "Amount exceeds your current balance.");
+      return;
+    }
 
     try {
       setSubmitting(true);
-
       await transferMoney({ amount, receiverId: recipientId });
 
-      Alert.alert(
-        "Success",
-        `Transferred ${amount.toFixed(3)} KWD to ${user.username}.`
-      );
-      setAmountStr("");
+      Alert.alert("Success", `Transferred ${amount.toFixed(3)} KWD to ${user.username}.`);
+      setAmount(0);
       setShowTextInput(false);
     } catch (e: any) {
       console.warn("transferMoney failed", e);
-      Alert.alert("Transfer failed", e?.message ?? "Please try again.");
+      const msg = e?.response?.data?.message || e?.message || "Please try again.";
+      Alert.alert("Transfer failed", msg);
     } finally {
       setSubmitting(false);
     }
   };
 
-  const sendDisabled = submitting || loadingId || !recipientId || !myUserId;
+  const invalidAmount =
+    amount === null || !isFinite(Number(amount)) || Number(amount) <= 0;
+
+  const sendDisabled =
+    submitting ||
+    loadingId ||
+    !recipientId ||
+    !myUserId ||
+    invalidAmount ||
+    Number(amount) > Number(user.balance ?? 0);
 
   return (
     <View style={styles.background}>
@@ -100,18 +108,27 @@ const UserItem = (user: Props) => {
           <View style={styles.transferRow}>
             <TextInput
               style={styles.amountInput}
-              value={amountStr}
-              onChangeText={setAmountStr}
+            keyboardType = 'numeric'
+              value={ String(amount)}
+              onChangeText={(text) => {
+                // remove everything except digits and dot
+                const cleaned = text.replace(/[^0-9.]/g, "");
+                // prevent multiple dots
+                const normalized = cleaned.replace(/(\..*)\./g, "$1");
+                if (normalized === "") {
+                  setAmount(0);
+                } else {
+                  const n = parseFloat(normalized);
+                  setAmount(isNaN(n) ? 0 : n);
+                }
+              }}
               placeholder="Insert amount"
-              keyboardType="decimal-pad"
               inputMode="decimal"
             />
             <Button
-              title={
-                loadingId ? "Loading..." : submitting ? "Sending..." : "Send"
-              }
+              title={loadingId ? "Loading..." : submitting ? "Sending..." : "Send"}
               onPress={handleTransfer}
-              disabled={sendDisabled}
+              disabled={amount === 0}
             />
           </View>
         ) : (

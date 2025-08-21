@@ -31,13 +31,13 @@ export const withdrawMoney = async (amount: number) => {
   return res.data;
 };
 {
-  /*Transfer */
+  /*Transfer from my account to receiverId */
 }
 export const transferMoney = async (payload: TransferPayload) => {
   const token = await getToken();
 
   const res = await instance.put(
-    "/mini-project/api/transactions/transfer/<username>",
+    "/mini-project/api/transactions/transfer",
     payload,
     { headers: { Authorization: `Bearer ${token}` } }
   );
@@ -47,6 +47,16 @@ export const transferMoney = async (payload: TransferPayload) => {
 {
   /*get all transactions */
 }
+
+export const getTransactions = async (page: number, limit: number) => {
+  const token = await getToken();
+  const data = await instance.get(
+    `/mini-project/api/transactions/my?page=${page}&limit=${limit}`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return data;
+};
+
 export const getAllTransactions = async () => {
   const data = await instance.get("/mini-project/api/transactions/my");
   return data;
