@@ -42,9 +42,15 @@ export default function RootLayout() {
         
         <Tabs
           screenOptions={{
-            tabBarActiveTintColor: "#007bff",
+            tabBarActiveTintColor: "#fed810",
+            tabBarInactiveTintColor: "white",
+            tabBarStyle: {
+              backgroundColor: "#019ee7",
+              borderTopColor: "#00244c",
+              borderTopWidth: 5,
+            },
             headerRight: () => (
-              <MaterialIcons name="logout" size={24} color="black" onPress={() => handleLogout()} />
+              <MaterialIcons name="logout" size={24} color="red" style={{marginRight: 10}} onPress={() => handleLogout()} />
             ),
           }}
         >
@@ -71,15 +77,7 @@ export default function RootLayout() {
             }}
           />
           <Tabs.Protected guard={isAuthenticated}>
-            <Tabs.Screen
-              name="current-user"
-              options={{
-                title: "Profile",
-                tabBarIcon: ({ color }) => (
-                  <FontAwesome name="user-circle" size={20} color={color} />
-                ),
-              }}
-            />
+          
             <Tabs.Screen
               name="index"
               options={{
@@ -108,6 +106,15 @@ export default function RootLayout() {
                     size={24}
                     color={color}
                   />
+                ),
+              }}
+            />
+              <Tabs.Screen
+              name="current-user"
+              options={{
+                title: "Profile",
+                tabBarIcon: ({ color }) => (
+                  <FontAwesome name="user-circle" size={20} color={color} />
                 ),
               }}
             />

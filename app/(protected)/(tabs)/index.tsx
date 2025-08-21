@@ -136,12 +136,12 @@ const Home = () => {
               placeholder="Enter amount to withdraw"
               keyboardType="numeric"
               value={withdrawAmount}
-              onChangeText={setWithdrawAmount}
+              onChangeText={setWithdrawAmount} 
             />
             <Button
               onPress={handleConfirmWithdraw}
               title={txnMutation.isPending ? "Sending..." : "Send"}
-              disabled={txnMutation.isPending}
+              disabled={txnMutation.isPending} 
             />
           </View>
         ) : (
@@ -209,8 +209,8 @@ const styles = StyleSheet.create({
   input: {
     width: "80%",
     height: 50,
-    borderColor: "#ddd",
-    borderWidth: 1,
+    borderColor: "#00244c",
+    borderWidth: 5,
     borderRadius: 8,
     paddingHorizontal: 15,
     marginBottom: 15,
@@ -274,5 +274,14 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: "GothicA1-Regular",
     color: "#00244c",
+  },
+  button: {
+    backgroundColor: "#00244c",
+    borderColor: "#00244c",
+    borderWidth: 5,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 8,
+    marginBottom: 10,
   },
 });
